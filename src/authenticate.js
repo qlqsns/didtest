@@ -1,4 +1,5 @@
 import { recoverAddress, hashMessage } from "ethers";
+import { useNavigate } from "react-router-dom";
 
 // 인증 로직
 export const authenticate = async (didDocument, setMessage, setSignature, setIsValidSignature) => {
@@ -58,3 +59,4 @@ const verifySignature = async (message, signature, didDocument) => {
     return false;
   }
 };
+export default authenticate;

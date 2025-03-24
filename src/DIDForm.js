@@ -20,7 +20,7 @@ function DIDForm({ account }) {
 
       // DID 예시 문서 (실제로는 블록체인에 기록되어야 함)
       const exampleDIDDocuments = {
-        "did:ethr:0x0dd5e6d8bb1e7fed45cc09cfdc2b858bab2d3c0": {
+        "did:ethr:0x0dd5e6d8bb1e7fed45cc09cfdc2b858bab2d3c0a": {
           id: "did:ethr:0x0dd5e6d8bb1e7fed45cc09cfdc2b858bab2d3c0a",
           publicKey: [
             {
@@ -94,7 +94,12 @@ function DIDForm({ account }) {
                   ? "✅ 서명이 유효합니다."
                   : "❌ 서명이 유효하지 않습니다."}
               </p>
-              <button onClick={gohome}>메인 화면으로</button>
+
+              {isValidSignature ? (
+                <button onClick={() => navigate("/mainpage")}>다음</button>
+              ) : (
+                <button onClick={gohome}>메인 화면으로</button>
+              )}
             </div>
           ) : (
             <p>서명 검증 중...</p>

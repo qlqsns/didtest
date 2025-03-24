@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import IdentityVerification from "./IdentityVerification";
 import WalletConnect from "./WalletConnect";
 import DIDForm from "./DIDForm";
+import Authenticate from "./authenticate";
 import bgImage from './assets/bg.jpg';
+import MainPage from "./mypage/MainPage"
 import './App.css';
 
 function App() {
@@ -48,6 +50,8 @@ function App() {
           } />
           <Route path="/identity-verification" element={<IdentityVerification />} />
           <Route path="/didform" element={<DIDForm />} />
+          <Route path="/authenticate" element={<Authenticate />} />
+          <Route path="/mainpage" element={<MainPage />} />
         </Routes>
     </div>
   );

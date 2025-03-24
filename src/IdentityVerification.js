@@ -14,6 +14,10 @@ function IdentityVerification() {
     // 실제로 신원 인증 후 페이지를 이동시킬 수 있습니다.
   };
 
+   const gohome = () => {
+    window.location.href = "/"; // 메인 화면으로 이동
+  };
+
   return (
     <div className="identity-verification">
       <h2>신원 인증</h2>
@@ -54,7 +58,8 @@ function IdentityVerification() {
             required
           />
         </div>
-        <button type="submit">신원 인증 제출</button>
+        <button type="submit" style={{ marginBottom: "10px" }} >신원 인증 제출</button>
+        <button type="button" onClick={gohome} >뒤로가기</button>
       </form>
     </div>
   );
