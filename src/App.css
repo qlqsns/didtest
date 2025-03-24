@@ -73,3 +73,17 @@ button.loginbutton:hover {
     transform: rotate(360deg);
   }
 }
+
+.message-popup {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  padding: 20px;
+  margin-top: 20px;
+  text-align: center;
+  color:black;
+  border-radius: 5px;
+}
+
+.message-popup button {
+  margin-top: 10px;
+}

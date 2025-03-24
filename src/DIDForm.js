@@ -5,6 +5,8 @@ import "./App.css";
 
 function DIDForm({ account }) {
   const navigate = useNavigate();
+  const [alarm, setAlarm] = useState("");
+  const [showalarm, setShowalarm] = useState(false);
   const [didDocument, setDidDocument] = useState(null); // DID 문서 상태
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [isValidSignature, setIsValidSignature] = useState(null); // 서명 검증 상태
@@ -16,98 +18,91 @@ function DIDForm({ account }) {
       const did = `did:ethr:${account}`; // 지갑 주소를 기반으로 DID 생성
       setLoading(true);
 
-    //DID 예시 문서임 실제로는 블록체인에 기록되어야함. 
-    // 테스트를 위해, 1,2,3,4 번에 자신의 주소지갑 입력! 3,4번 같은 경우 뒤에 #key-1 입력
+      // DID 예시 문서 (실제로는 블록체인에 기록되어야 함)
       const exampleDIDDocuments = {
-        "did:ethr:0x0dd5e6d8bb1e7fed45cc09cfdc2b858bab2d3c0": { // 1
-          id: "did:ethr:0x0dd5e6d8bb1e7fed45cc09cfdc2b858bab2d3c0a", // 2
+        "did:ethr:0x0dd5e6d8bb1e7fed45cc09cfdc2b858bab2d3c0": {
+          id: "did:ethr:0x0dd5e6d8bb1e7fed45cc09cfdc2b858bab2d3c0a",
           publicKey: [
             {
-              id: "did:ethr:d1ec335528e540e0d14e74d206df85740736e950#key-1", //3
+              id: "did:ethr:d1ec335528e540e0d14e74d206df85740736e950#key-1",
               type: "Secp256k1VerificationKey2018",
             },
           ],
           authentication: [
             {
               type: "Secp256k1SignatureAuthentication2018",
-              publicKey: "did:ethr:d1ec335528e540e0d14e74d206df85740736e950#key-1", //4
+              publicKey: "did:ethr:d1ec335528e540e0d14e74d206df85740736e950#key-1",
             },
           ],
         },
       };
 
-      console.log("Requested DID:", did);
-      console.log("DID Document:", exampleDIDDocuments[did]);
-
       const document = exampleDIDDocuments[did];
 
       if (document) {
-        console.log("Found DID Document:", document);
         setDidDocument(document);
+        authenticateAndVerify(document); // 서명 검증을 자동으로 수행
       } else {
-        console.log("DID Document not found for:", did);
         setDidDocument(null);
-
-        const userConfirmed = window.confirm("등록된 DID가 없습니다. 신원 인증 후 이용할 수 있습니다.");
-        if(userConfirmed) {
-          alert("신원 인증 창으로 이동합니다.");
-          navigate("/identity-verification");
-        }else{
-          alert("메인 페이지로 이동합니다");
-          window.location.reload();
-          
-        }
+        setAlarm("이런! 등록된 DID가 없습니다. 신원 인증 후 이용할 수 있습니다.");
+        setShowalarm(true);
       }
 
       setLoading(false);
     }
-  }, [account,navigate]);
+  }, [account]);
 
-  const handleAuthentication = async () => {
-    if (didDocument) {
-      // authenticate.js 호출 부분
-      const isValid = await authenticate(
-        didDocument,
-        setMessage,
-        setSignature,
-        setIsValidSignature 
-      );
-      setIsValidSignature(isValid);
-    }
+  // 서명 검증 및 처리 함수
+  const authenticateAndVerify = async (document) => {
+    // 서명 검증을 위한 인증 작업
+    const isValid = await authenticate(
+      document,
+      setMessage,
+      setSignature,
+      setIsValidSignature
+    );
+    setIsValidSignature(isValid);
+  };
+
+  const hideMessageAndNavigate = () => {
+    setShowalarm(false);
+    navigate("/identity-verification"); // 신원 인증 페이지로 이동
+  };
+
+  const gohome = () => {
+    window.location.href = "/"; // 메인 화면으로 이동
   };
 
   return (
-    <div className="mt-4">
-      {loading ? (
-        <p className="normaltext">DID 문서 조회 중...</p>
-      ) : didDocument ? (
-        <div className="mt-4 p-4 bg-white shadow-md rounded-lg">
-          <h3 className="normaltext">DID 문서</h3>
-          <pre className="normaltext">{JSON.stringify(didDocument, null, 2)}</pre>
-        </div>
-      ) : (
-        <p className="normaltext">❌ 해당 DID 문서가 없습니다. DID 발급 안됨.</p>
-      )}
-
-      <button
-        onClick={handleAuthentication}
-        className="loginbutton"
-      >
-        신원 인증하기
-      </button>
-
-      {isValidSignature !== null && (
-        <div className="mt-4">
-          <h3 className="normaltext">서명 검증 결과</h3>
-          <p>{isValidSignature ? "✅ 서명이 유효합니다." : "❌ 서명이 유효하지 않습니다."}</p>
+    <div>
+      {/* DID 문서가 존재하지 않을 경우 메시지 표시 */}
+      {showalarm && (
+        <div className="message-popup">
+          <p>{alarm}</p> {/* 알림 메시지 표시 */}
+          <button onClick={hideMessageAndNavigate}>신원 인증하기</button>
+          <button onClick={gohome}>메인 화면으로</button>
         </div>
       )}
 
-      <div className="mt-4">
-        <h3 className="normaltext">검증 단계 정보</h3>
-        <p><strong>서명할 메시지:</strong> {message}</p>
-        <p><strong>서명:</strong> {signature}</p>
-      </div>
+      {/* 서명 검증 결과를 자동으로 표시 */}
+      {!showalarm && didDocument && (
+        <div>
+          {isValidSignature !== null ? (
+            <div className="message-popup">
+              <p>
+                {isValidSignature
+                  ? "✅ 서명이 유효합니다."
+                  : "❌ 서명이 유효하지 않습니다."}
+              </p>
+              <button onClick={gohome}>메인 화면으로</button>
+            </div>
+          ) : (
+            <p>서명 검증 중...</p>
+          )}
+        </div>
+      )}
+
+      {loading && <p>로딩 중...</p>}
     </div>
   );
 }
