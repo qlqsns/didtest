@@ -1,4 +1,5 @@
 import React from "react";
+import './App.css';
 
 function WalletConnect({ setAccount }) {
   const connectWallet = async () => {
@@ -18,7 +19,7 @@ function WalletConnect({ setAccount }) {
   return (
     <button
       onClick={connectWallet}
-      className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+      className="loginbutton"
     >
       MetaMask 지갑 연결하기
     </button>
