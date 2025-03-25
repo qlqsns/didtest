@@ -5,12 +5,14 @@ import WalletConnect from "./WalletConnect";
 import DIDForm from "./DIDForm";
 import Authenticate from "./authenticate";
 import bgImage from './assets/bg.jpg';
-import MainPage from "./mypage/MainPage"
+import MainPage from "./mypage/MainPage";
+import ProtectedRoute from "./ProtectedRoute";
 import './App.css';
 
 function App() {
   const [hasMetaMask, setHasMetaMask] = useState(false);
   const [account, setAccount] = useState(null);
+  const isAuthenticated = !!account;
   useEffect(() => {
     if (typeof window.ethereum === "undefined") {
       alert("❌ MetaMask가 설치되어 있지 않습니다. 설치 후 다시 시도해주세요!");
@@ -48,10 +50,13 @@ function App() {
               </div>
             )
           } />
+          {/* 🔒 인증이 필요한 경로들 보호 */}
+        <Route element={<ProtectedRoute isAuthenticated={isAuthenticated} />}>
           <Route path="/identity-verification" element={<IdentityVerification />} />
           <Route path="/didform" element={<DIDForm />} />
           <Route path="/authenticate" element={<Authenticate />} />
           <Route path="/mainpage" element={<MainPage />} />
+        </Route>
         </Routes>
     </div>
   );
